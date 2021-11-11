@@ -25,23 +25,23 @@ import Forward_Function_Decription_ReturnValue_Detailed		from "./_codes/forward-
 import Universal_Reference_Description_Simple				from "./_codes/forward-function-description/universal-reference/simple.mdx";
 import Universal_Reference_Description_Detailed				from "./_codes/forward-function-description/universal-reference/detailed.mdx";
 
-# `std::forward()` utility function
+# `std::forward()` function template
 
 Defined in header `<utility>`.
 
 ### Description
 
-This utility function is used to preserve the correct value category of a parameter that is being passed to another function, 
-which can be overloaded value category of its parameter(s) — most frequently in a wrapper-style delegation.
+This utility function template is used to preserve the correct value category of a parameter that is being passed down to another function
+that can be overloaded on the value category said parameter — most frequently in a wrapper-style delegation.
 
 Most common use cases include: 
 
 - Instead of simply calling a function (that is overloaded in a way described above), wrapping it into another function that, for example, 
   logs something before passing down its parameter. 
-- Writing a factory function (instead of using a constructor itself) which will ultimately call some constructor 
-  (which may distinguish between rvalue and lvalue parameters).
+- Writing a factory function which will ultimately call some constructor (instead of using it directly without any indirection) 
+  that cares whether it was called with an rvalue or an lvalue.
 - Writing a **single** constructor which handles **both** lvalue and rvalue arguments and forwards them to member-initialzier list
-  in order to construct the fields of the class (instead of overloading said constructor on value categories of its parameters).
+  in order to efficiently construct the fields of the class (instead of overloading said constructor on value categories of its parameters).
 
 Is is not immediately obvious why such function is necessary. Please refer to [examples](#examples) below 
 which illustrate what problems may occur if forwarding is omitted.
@@ -159,8 +159,10 @@ Consumes an lvalue
 
 Notice the difference in the last line. It says **l**value, not **r**value.
 
-That is becasue named paramteres are always treated as lvalues (even if their type is a reference to an rvalue). 
-To fix this, we can use `std::forward()`:
+That is becasue named paramteres are always treated as lvalues (even if their type is a reference to an rvalue).
+More formally, even if the *type* of an argument is an rvalue reference, the *value category* of that reference is an lvalue.
+
+To fix the presented issue, we can use `std::forward()`:
 
 <Columns spacing="20px" columns={['8fr', '4fr']}>
 <div>
@@ -199,7 +201,7 @@ Consumes an rvalue
 `std::forward()` may seem like a cast that explicitly preserves the correct value category.
 And it actually does exactly that.
 
-#### Implementing a constructor that effciently works with both lvalues and rvalues
+#### Implementing a constructor that efficiently works with both lvalues and rvalues
 
 Considering a simple class that wraps two `std::string`s:
 
@@ -225,12 +227,13 @@ int main() {
 }
 ```
 
-This is fine, but `2)` will suffer from performance penalties. 
-C-string literals (`"Foo"` and `"Bar"`) will first have to be converted into `std::string` temporaries. 
-Temporaries can bind to `const&`, so the code compiles, but it is far from optimal. 
+This implementation is fine, but `2)` will suffer from performance penalties. 
+C-string literals (`"Foo"` and `"Bar"`) will first have to be converted to `std::string` temporaries. 
+
+Temporaries can bind to `const&`, so the code compiles, but it is very far from optimal. 
 Temporaries will be used to create copies inside `p2`, despite the fact that they could simply be moved into the object.
 
-To fix this, `person`'s constructor can be overloaded to accept rvalues and move them into class fields:
+To fix this, `person`'s constructor can be overloaded so that it accepts rvalues and moves them into class fields:
 
 ```cpp
 person(std::string const& name, std::string const& surname)
@@ -240,8 +243,8 @@ person(std::string&& name, std::string&& surname)
         : name(std::move(name)), surname(std::move(surname)) { }
 ```
 
-[Previous example](#wrapping-a-function-with-a-logger) illustrated that in this case, `name` and `surname` are lvalues (referenced that bound to temporaries),
-so using them to initialize `name` and `surname` fields will not invoke move-constructors. It is necessary to add `std::move` here.
+[Previous example](#wrapping-a-function-with-a-logger) illustrated that in this case, `name`'s and `surname`'s value categories are lvalues (even though they bound to temporaries and their types are rvalue references),
+so using them to initialize `name` and `surname` fields will not invoke move-constructors. It is necessary to add `std::move` in both cases.
 
 While the above example works, it's still not optimal. Consider this case:
 
@@ -279,7 +282,10 @@ person(S1&& name, S2&& surname)
 		: name(/* ??? */ name), surname(/* ??? */ surname) { }
 ```
 
-The tricky part is what to put instead of `/* ??? */`. We could put *nothing* in there, but we would never use move constructors
+We turned the constructor (not the whole class) into a template, so that it will accept any type (be it `std::string` or a c-string literal).
+
+The tricky part is what to put instead of `/* ??? */` in the initialization of the fields. 
+We could put *nothing* in there, but we would never use move constructors
 (we agreed that never doing so wouldn't be optimal), because - to repeat this important fact - the parameters have names and
 despite being references to rvalues, their names are considered as lvalues. We can't put `std::move()` there either, because in the case of receiving an lvalue, we shouldn't move from it.
 
@@ -298,5 +304,5 @@ person(S1&& name, S2&& surname)
 :::
 
 Since we have two arguments that are universal references, we automatically accept any combination of value categories.
-Despite that, `name` and `surname` are parameters that have names and thus, since we can name them, they are treated as lvalues.
-To correctly forward their original value categories to the construction of class' fields, we use `std::forward()`.
+Despite that, `name` and `surname` are parameters that have names and thus, since we can name them, their value categories are lvalues.
+To correctly forward them to the construction of class' fields, we use `std::forward()`.

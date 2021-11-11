@@ -4,6 +4,9 @@ We call it a *universal reference* (or a *forwarding reference*†).
 It can bind to **both lvalues and rvalues**. This is handy, because we can later use `std::forward()` to correctly forward it
 with the appropriate value category without really caring whether it was an rvalue or an lvalue reference. 
 
+In the above case, turning the constructor into a template and using universal references enabled us to accept any type with any value category.
+We are automatically handling all cases with `std::string`s with different value categories. Ditto for c-string literals.
+
 ---
 
 †The term *forwarding reference* derives its name from `std::forward()`'s name.
