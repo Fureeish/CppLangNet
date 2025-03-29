@@ -1,6 +1,6 @@
 ---
 title:         ranges::find algorithm
-sidebar_label: ranges::find(  )
+sidebar_label: ranges::find()
 description:   ranges::find algorithm C++ documentation
 hide_title:    true
 tags:          [ranges, algorithm, find, search]
@@ -18,6 +18,17 @@ import Signature_SinceCpp20_Detailed   from './_codes/find/since-cpp20-detailed.
 import Signature_SinceCpp20_Simplified from './_codes/find/since-cpp20-simplified.mdx';
 
 # std::ranges::find() algorithm
+
+### Explanation
+
+Used to _locate_ an element inside a range, providing direct access to it through the returned iterator.
+
+If there are multiple values that this algorithm could locate, it returns an iterator to the one that it first encounters.
+This is determined by the passed range / iterators behavior.
+
+If there is no suitable value, i.e., if the finding process fails, the algorithm returns an iterator equal to the end of the supplied range.
+
+### Signature
 
 <VersionTabs content={{
 	'since-cpp20': {
@@ -102,70 +113,304 @@ inline constexpr find_fn find;
 
 ### Examples
 
-<Columns columns={['8fr', '4fr']}>
-<div>
+#### Finding and printing the found value
 
-```cpp title='Main.cpp' showLineNumbers
+```cpp showLineNumbers
 #include <algorithm>
 #include <iostream>
-#include <iterator>
+#include <vector>
 
 int main()
 {
-    namespace ranges = std::ranges;
-
-    const int n1 = 3;
-    const int n2 = 5;
-    const auto v = {4, 1, 3, 2};
-
-    if (ranges::find(v, n1) != v.end())
-        std::cout << "v contains: " << n1 << '\n';
-    else
-        std::cout << "v does not contain: " << n1 << '\n';
-
-    if (ranges::find(v.begin(), v.end(), n2) != v.end())
-        std::cout << "v contains: " << n2 << '\n';
-    else
-        std::cout << "v does not contain: " << n2 << '\n';
-
-    auto is_even = [](int x) { return x % 2 == 0; };
-
-    if (auto result = ranges::find_if(v.begin(), v.end(), is_even); result != v.end())
-        std::cout << "First even element in v: " << *result << '\n';
-    else
-        std::cout << "No even elements in v\n";
-
-    if (auto result = ranges::find_if_not(v, is_even); result != v.end())
-        std::cout << "First odd element in v: " << *result << '\n';
-    else
-        std::cout << "No odd elements in v\n";
-
-    auto divides_13 = [](int x) { return x % 13 == 0; };
-
-    if (auto result = ranges::find_if(v, divides_13); result != v.end())
-        std::cout << "First element divisible by 13 in v: " << *result << '\n';
-    else
-        std::cout << "No elements in v are divisible by 13\n";
-
-    if (auto result = ranges::find_if_not(v.begin(), v.end(), divides_13);
-        result != v.end())
-        std::cout << "First element indivisible by 13 in v: " << *result << '\n';
-    else
-        std::cout << "All elements in v are divisible by 13\n";
+    const std::vector<int> values{2, 4, 6, 1, 8, 10};
+    const auto iteratorTo1 = std::ranges::find(values, 1);
+    std::cout << *iteratorTo1;
 }
 ```
 
-</div>
-<div>
-
 ```plaintext title="Output"
-v contains: 3
-v does not contain: 5
-First even element in v: 4
-First odd element in v: 1
-No elements in v are divisible by 13
-First element indivisible by 13 in v: 4
+1
 ```
 
-</div>
-</Columns>
+#### Finding and removing the found value
+
+```cpp showLineNumbers
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <vector>
+
+int main()
+{
+    std::vector<int> values{2, 4, 6, 1, 8, 10};
+    const auto iteratorTo1 = std::ranges::find(values, 1);
+    values.erase(iteratorTo1);
+
+    std::string text = "hello, there!";
+    const auto iteratorToComma = std::ranges::find(text, ',');
+    text.erase(iteratorToComma);
+
+    for (const int element : values) std::cout << element << ' ';
+    std::cout << '\n';
+    std::cout << text;
+}
+```
+
+```plaintext title="Output"
+2 4 6 8 10
+hello there!
+```
+
+#### Finding and changing the found value
+
+```cpp showLineNumbers
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    auto println = [](std::vector<int> const& vec)
+    {
+        for (const int element : vec) std::cout << element << ' ';
+        std::cout << '\n';
+    };
+
+    std::vector<int> values{2, 4, 5, 8, 10};
+    println(values);
+    auto iteratorTo5 = std::ranges::find(values, 5);
+    *iteratorTo5 = 6;
+    println(values);
+}
+```
+
+```plaintext title="Output"
+2 4 5 8 10
+2 4 6 8 10
+```
+
+#### Using a projection to find a value with a given characteristic #1
+
+```cpp showLineNumbers
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <vector>
+
+int main()
+{
+    const std::vector<std::string> words = {
+        "some", "of", "these", "words", "are",
+        "of", "the", "same", "lengths"
+    };
+
+    const auto bySize = [](const std::string& s) {
+        return s.size();
+    };
+
+    const auto ofSize5 = std::ranges::find(words, 5, bySize);
+    std::cout << *ofSize5;
+}
+```
+
+```plaintext title="Output"
+these
+```
+
+#### Using a projection to find a value with a given characteristic #2
+
+```cpp showLineNumbers
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    const std::vector<int> numbers = {
+        5, 6, 7, 8
+    };
+
+    const auto byModulus5 = [](const int n) {
+        return n % 5;
+    };
+
+    const auto withRemainder2 = std::ranges::find(numbers, 2, byModulus5);
+    std::cout << *withRemainder2;
+}
+```
+
+```plaintext title="Output"
+7
+```
+
+#### Failing to find a value safely
+
+```cpp showLineNumbers
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    const std::vector<int> onlyEvens = {
+        2, 4, 6, 8, 10
+    };
+
+    auto positionOf1 = std::ranges::find(onlyEvens, 1);
+
+    if (positionOf1 != onlyEvens.end())
+    {
+        std::cout << "odd element found: " << *positionOf1;
+    }
+    else
+    {
+        std::cout << "no odd elements found";
+    }
+}
+```
+
+```plaintext title="Output"
+no even elements found
+```
+
+:::info
+Because finding _may_ fail, we should almost always compare the returned iterator with the _end_ of the supplied range before we use it.
+  :::
+
+#### Failing to find a value unsafely
+
+```cpp
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    const std::vector<int> onlyEvens = {
+        2, 4, 6, 8, 10
+    };
+
+    auto positionOf1 = std::ranges::find(onlyEvens, 1);
+
+    std::cout << "odd element found: " << *positionOf1;
+}
+```
+
+:::danger
+Because `onlyEvens` does **not** contain the searched-for value `1`, it returns the _end_ of the supplied range, i.e., `onlyEvens.end()`. Dereferencing it invokes undefined behavior.
+:::
+
+#### Finding the last (instead of the first) suitable value thanks to reverse iterators
+
+```cpp showLineNumbers
+#include <algorithm>
+#include <iostream>
+#include <ranges>
+#include <vector>
+
+int main()
+{
+    auto println = [](std::vector<int> const& vec)
+    {
+        for (const int element : vec) std::cout << element << ' ';
+        std::cout << '\n';
+    };
+
+    std::vector<int> numbers = {
+        1, 2, 3, 2, 1
+    };
+
+    const auto first1 = std::ranges::find(numbers, 1);
+    const auto last1 = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
+
+    println(numbers);
+    *first1 = 9;
+    *last1  = 7;
+    println(numbers);
+
+    // can also use reverse_view from <ranges>
+    auto numbersReversed = numbers | std::views::reverse;
+    const auto last2 = std::ranges::find(numbersReversed, 2);
+    *last2 = 0;
+    println(numbers);
+}
+```
+
+```plaintext title="Output"
+1 2 3 2 1
+9 2 3 2 7
+9 2 3 0 7
+```
+
+#### Failing to find a value safely when dealing with an iterator-pair subrange
+
+```cpp showLineNumbers
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    const std::vector<int> numbers = {
+        1, 2, 3, 4, 5, 0, 6
+    };
+
+    const auto zeroInFirstThree = std::ranges::find(
+        numbers.begin(), numbers.begin() + 3, 0
+    );
+
+    if (zeroInFirstThree != numbers.begin() + 3)
+    {
+        std::cout << "there is a 0 in the first three elements";
+    }
+    else
+    {
+        std::cout << "there are no 0s in the first three elements";
+    }
+}
+```
+
+```plaintext title="Output"
+there are no 0s in the first three elements
+```
+
+:::info
+When dealing with an iterator-pair subrange, the _end_ of that subrange is the second iterator passed to the algorithm. Thus, in order to correctly test for the validity of the returned iterator, it needs to be compared with the second argument of the algorithm.
+:::
+
+
+#### Failing to find a value when dealing with an iterator-pair subrange unsafely
+
+```cpp showLineNumbers
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    const std::vector<int> numbers = {
+        1, 2, 3, 4, 5, 0, 6
+    };
+
+    const auto zeroInFirstThree = std::ranges::find(
+        numbers.begin(), numbers.begin() + 3, 0
+    );
+
+    if (zeroInFirstThree != numbers.end())
+    {
+        std::cout << "there is a 0 in the first three elements";
+    }
+    else
+    {
+        std::cout << "there are no 0s in the first three elements";
+    }
+}
+```
+
+```plaintext title="Output"
+there is a 0 in the first three elements
+```
+
+:::danger
+Here, instead of comparing the resulting iterator with the correct _end_, it was compared to the `numbers.end()`, which it had no chance of reaching. Thus, it is not equal to it, mistakenly suggesting that there indeed does exist a `0` value in the first three elements of `numbers`.
+:::
