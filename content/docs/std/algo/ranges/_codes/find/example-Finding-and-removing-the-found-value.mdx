@@ -1,0 +1,31 @@
+```cpp showLineNumbers
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <vector>
+
+int main()
+{
+    const auto println = [](const std::vector<int>& vec)
+    {
+        for (const int element : vec) std::cout << element << ' ';
+        std::cout << '\n';
+    };
+
+    std::vector<int> values{2, 4, 6, 1, 8, 10};
+    std::string text = "hello, there!";
+
+    println(values);
+    std::cout << text << '\n';
+
+    const auto iteratorTo1 = std::ranges::find(values, 1);
+    values.erase(iteratorTo1);
+
+    const auto iteratorToComma = std::ranges::find(text, ',');
+    text.erase(iteratorToComma);
+
+    std::cout << '\n';
+    println(values);
+    std::cout << text << '\n';
+}
+```

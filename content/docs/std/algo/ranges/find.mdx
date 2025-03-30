@@ -11,11 +11,23 @@ cppreference_origin_rel: w/cpp/algorithm/ranges/find
 import SymbolTable, { Symbol } from "@site-comps/SymbolTable";
 import Columns                 from "@site-comps/Columns";
 import VersionTabs             from "@site-comps/VersionTabs";
+import CustomCodeBlock			   from "@site-comps/CustomCodeBlock";
+
 
 {/* Codes */}
 
-import Signature_SinceCpp20_Detailed   from './_codes/find/since-cpp20-detailed.mdx';
-import Signature_SinceCpp20_Simplified from './_codes/find/since-cpp20-simplified.mdx';
+import Signature_SinceCpp20_Detailed                                             from './_codes/find/since-cpp20-detailed.mdx';
+import Signature_SinceCpp20_Simplified                                           from './_codes/find/since-cpp20-simplified.mdx';
+import FullCode_FindingAndPrintingTheFoundValue                                  from './_codes/find/example-Finding-and-printing-the-found-value.mdx';
+import FullCode_FindingAndRemovingTheFoundValue                                  from './_codes/find/example-Finding-and-removing-the-found-value.mdx';
+import FullCode_FindingAndChangingTheFoundValue                                  from './_codes/find/example-Finding-and-changing-the-found-value.mdx';
+import FullCode_UsingAProjectionToFindAValueWithAGivenCharacteristic1            from './_codes/find/example-Using-a-projection-to-find-a-value-with-a-given-characteristic1.mdx';
+import FullCode_UsingAProjectionToFindAValueWithAGivenCharacteristic2            from './_codes/find/example-Using-a-projection-to-find-a-value-with-a-given-characteristic1.mdx';
+import FullCode_FailingToFindAValueSafely                                        from './_codes/find/example-Failing-to-find-a-value-safely.mdx';
+import FullCode_FailingToFindAValueUnsafely                                      from './_codes/find/example-Failing-to-find-a-value-unsafely.mdx';
+import FullCode_FindingTheLastSuitableValueThanksToReverseIterators              from './_codes/find/example-Finding-the-last-suitable-value-thanks-to-reverse-iterators.mdx';
+import FullCode_FailingToFindAValueSafelyWhenDealingWithAnIteratorPairSubrange   from './_codes/find/example-Failing-to-find-a-value-safely-when-dealing-with-an-iterator-pair-subrange.mdx';
+import FullCode_FailingToFindAValueWhenDealingWithAnIteratorPairSubrangeUnsafely from './_codes/find/example-Failing-to-find-a-value-when-dealing-with-an-iterator-pair-subrange-unsafely.mdx';
 
 # std::ranges::find() algorithm
 
@@ -115,18 +127,15 @@ inline constexpr find_fn find;
 
 #### Finding and printing the found value
 
-```cpp showLineNumbers
-#include <algorithm>
-#include <iostream>
-#include <vector>
+<CustomCodeBlock fullCode={<FullCode_FindingAndPrintingTheFoundValue/>}>
 
-int main()
-{
-    const std::vector<int> values{2, 4, 6, 1, 8, 10};
-    const auto iteratorTo1 = std::ranges::find(values, 1);
-    std::cout << *iteratorTo1;
-}
+```cpp
+const std::vector<int> values{2, 4, 6, 1, 8, 10};
+const auto iteratorTo1 = std::ranges::find(values, 1);
+std::cout << *iteratorTo1;
 ```
+
+</CustomCodeBlock>
 
 ```plaintext title="Output"
 1
@@ -134,55 +143,49 @@ int main()
 
 #### Finding and removing the found value
 
-```cpp showLineNumbers
-#include <algorithm>
-#include <iostream>
-#include <string>
-#include <vector>
+<CustomCodeBlock fullCode={<FullCode_FindingAndRemovingTheFoundValue/>}>
 
-int main()
-{
-    std::vector<int> values{2, 4, 6, 1, 8, 10};
-    const auto iteratorTo1 = std::ranges::find(values, 1);
-    values.erase(iteratorTo1);
+```cpp
+std::vector<int> values{2, 4, 6, 1, 8, 10};
+std::string text = "hello, there!";
 
-    std::string text = "hello, there!";
-    const auto iteratorToComma = std::ranges::find(text, ',');
-    text.erase(iteratorToComma);
+println(values);
+std::cout << text << '\n';
 
-    for (const int element : values) std::cout << element << ' ';
-    std::cout << '\n';
-    std::cout << text;
-}
+const auto iteratorTo1 = std::ranges::find(values, 1);
+values.erase(iteratorTo1);
+
+const auto iteratorToComma = std::ranges::find(text, ',');
+text.erase(iteratorToComma);
+
+std::cout << '\n';
+println(values);
+std::cout << text << '\n';
 ```
 
+</CustomCodeBlock>
+
 ```plaintext title="Output"
+2 4 6 1 8 10
+hello, there!
+
 2 4 6 8 10
 hello there!
 ```
 
 #### Finding and changing the found value
 
-```cpp showLineNumbers
-#include <algorithm>
-#include <iostream>
-#include <vector>
+<CustomCodeBlock fullCode={<FullCode_FindingAndChangingTheFoundValue/>}>
 
-int main()
-{
-    auto println = [](std::vector<int> const& vec)
-    {
-        for (const int element : vec) std::cout << element << ' ';
-        std::cout << '\n';
-    };
-
-    std::vector<int> values{2, 4, 5, 8, 10};
-    println(values);
-    auto iteratorTo5 = std::ranges::find(values, 5);
-    *iteratorTo5 = 6;
-    println(values);
-}
+```cpp
+std::vector<int> values{2, 4, 5, 8, 10};
+println(values);
+auto iteratorTo5 = std::ranges::find(values, 5);
+*iteratorTo5 = 6;
+println(values);
 ```
+
+</CustomCodeBlock>
 
 ```plaintext title="Output"
 2 4 5 8 10
@@ -191,27 +194,18 @@ int main()
 
 #### Using a projection to find a value with a given characteristic #1
 
-```cpp showLineNumbers
-#include <algorithm>
-#include <iostream>
-#include <string>
-#include <vector>
+<CustomCodeBlock fullCode={<FullCode_UsingAProjectionToFindAValueWithAGivenCharacteristic1/>}>
 
-int main()
-{
-    const std::vector<std::string> words = {
-        "some", "of", "these", "words", "are",
-        "of", "the", "same", "lengths"
-    };
+```cpp
+const std::vector<std::string> words = {
+    "some", "of", "these", "words", "are",
+    "of", "the", "same", "lengths"
+};
 
-    const auto bySize = [](const std::string& s) {
-        return s.size();
-    };
-
-    const auto ofSize5 = std::ranges::find(words, 5, bySize);
-    std::cout << *ofSize5;
-}
+const auto ofSize5 = std::ranges::find(words, 5, bySize);
+std::cout << *ofSize5;
 ```
+</CustomCodeBlock>
 
 ```plaintext title="Output"
 these
@@ -219,25 +213,18 @@ these
 
 #### Using a projection to find a value with a given characteristic #2
 
-```cpp showLineNumbers
-#include <algorithm>
-#include <iostream>
-#include <vector>
+<CustomCodeBlock fullCode={<FullCode_UsingAProjectionToFindAValueWithAGivenCharacteristic2/>}>
 
-int main()
-{
-    const std::vector<int> numbers = {
-        5, 6, 7, 8
-    };
+```cpp
+const std::vector<int> numbers = {
+    5, 6, 7, 8
+};
 
-    const auto byModulus5 = [](const int n) {
-        return n % 5;
-    };
-
-    const auto withRemainder2 = std::ranges::find(numbers, 2, byModulus5);
-    std::cout << *withRemainder2;
-}
+const auto withRemainder2 = std::ranges::find(numbers, 2, byModulus5);
+std::cout << *withRemainder2;
 ```
+
+</CustomCodeBlock>
 
 ```plaintext title="Output"
 7
@@ -245,29 +232,26 @@ int main()
 
 #### Failing to find a value safely
 
-```cpp showLineNumbers
-#include <algorithm>
-#include <iostream>
-#include <vector>
+<CustomCodeBlock fullCode={<FullCode_FailingToFindAValueSafely/>}>
 
-int main()
+```cpp
+const std::vector<int> onlyEvens = {
+    2, 4, 6, 8, 10
+};
+
+auto positionOf1 = std::ranges::find(onlyEvens, 1);
+
+if (positionOf1 != onlyEvens.end())
 {
-    const std::vector<int> onlyEvens = {
-        2, 4, 6, 8, 10
-    };
-
-    auto positionOf1 = std::ranges::find(onlyEvens, 1);
-
-    if (positionOf1 != onlyEvens.end())
-    {
-        std::cout << "odd element found: " << *positionOf1;
-    }
-    else
-    {
-        std::cout << "no odd elements found";
-    }
+    std::cout << "odd element found: " << *positionOf1;
+}
+else
+{
+    std::cout << "no odd elements found";
 }
 ```
+
+</CustomCodeBlock>
 
 ```plaintext title="Output"
 no even elements found
@@ -279,22 +263,19 @@ Because finding _may_ fail, we should almost always compare the returned iterato
 
 #### Failing to find a value unsafely
 
+<CustomCodeBlock fullCode={<FullCode_FailingToFindAValueUnsafely/>}>
+
 ```cpp
-#include <algorithm>
-#include <iostream>
-#include <vector>
+const std::vector<int> onlyEvens = {
+    2, 4, 6, 8, 10
+};
 
-int main()
-{
-    const std::vector<int> onlyEvens = {
-        2, 4, 6, 8, 10
-    };
+auto positionOf1 = std::ranges::find(onlyEvens, 1);
 
-    auto positionOf1 = std::ranges::find(onlyEvens, 1);
-
-    std::cout << "odd element found: " << *positionOf1;
-}
+std::cout << "odd element found: " << *positionOf1;
 ```
+
+</CustomCodeBlock>
 
 :::danger
 Because `onlyEvens` does **not** contain the searched-for value `1`, it returns the _end_ of the supplied range, i.e., `onlyEvens.end()`. Dereferencing it invokes undefined behavior.
@@ -302,39 +283,30 @@ Because `onlyEvens` does **not** contain the searched-for value `1`, it returns 
 
 #### Finding the last (instead of the first) suitable value thanks to reverse iterators
 
-```cpp showLineNumbers
-#include <algorithm>
-#include <iostream>
-#include <ranges>
-#include <vector>
+<CustomCodeBlock fullCode={<FullCode_FindingTheLastSuitableValueThanksToReverseIterators/>}>
 
-int main()
-{
-    auto println = [](std::vector<int> const& vec)
-    {
-        for (const int element : vec) std::cout << element << ' ';
-        std::cout << '\n';
-    };
+```cpp
+std::vector<int> numbers = {
+    1, 2, 3, 2, 1
+};
 
-    std::vector<int> numbers = {
-        1, 2, 3, 2, 1
-    };
+const auto first1 = std::ranges::find(numbers, 1);
+const auto last1 = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
 
-    const auto first1 = std::ranges::find(numbers, 1);
-    const auto last1 = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
+println(numbers);
+*first1 = 9;
+*last1  = 7;
+println(numbers);
 
-    println(numbers);
-    *first1 = 9;
-    *last1  = 7;
-    println(numbers);
-
-    // can also use reverse_view from <ranges>
-    auto numbersReversed = numbers | std::views::reverse;
-    const auto last2 = std::ranges::find(numbersReversed, 2);
-    *last2 = 0;
-    println(numbers);
+// can also use reverse_view from <ranges>
+auto numbersReversed = numbers | std::views::reverse;
+const auto last2 = std::ranges::find(numbersReversed, 2);
+*last2 = 0;
+println(numbers);
 }
 ```
+
+</CustomCodeBlock>
 
 ```plaintext title="Output"
 1 2 3 2 1
@@ -344,31 +316,28 @@ int main()
 
 #### Failing to find a value safely when dealing with an iterator-pair subrange
 
-```cpp showLineNumbers
-#include <algorithm>
-#include <iostream>
-#include <vector>
+<CustomCodeBlock fullCode={<FullCode_FailingToFindAValueSafelyWhenDealingWithAnIteratorPairSubrange/>}>
 
-int main()
+```cpp
+const std::vector<int> numbers = {
+    1, 2, 3, 4, 5, 0, 6
+};
+
+const auto zeroInFirstThree = std::ranges::find(
+    numbers.begin(), numbers.begin() + 3, 0
+);
+
+if (zeroInFirstThree != numbers.begin() + 3)
 {
-    const std::vector<int> numbers = {
-        1, 2, 3, 4, 5, 0, 6
-    };
-
-    const auto zeroInFirstThree = std::ranges::find(
-        numbers.begin(), numbers.begin() + 3, 0
-    );
-
-    if (zeroInFirstThree != numbers.begin() + 3)
-    {
-        std::cout << "there is a 0 in the first three elements";
-    }
-    else
-    {
-        std::cout << "there are no 0s in the first three elements";
-    }
+    std::cout << "there is a 0 in the first three elements";
+}
+else
+{
+    std::cout << "there are no 0s in the first three elements";
 }
 ```
+
+</CustomCodeBlock>
 
 ```plaintext title="Output"
 there are no 0s in the first three elements
@@ -381,31 +350,28 @@ When dealing with an iterator-pair subrange, the _end_ of that subrange is the s
 
 #### Failing to find a value when dealing with an iterator-pair subrange unsafely
 
-```cpp showLineNumbers
-#include <algorithm>
-#include <iostream>
-#include <vector>
+<CustomCodeBlock fullCode={<FullCode_FailingToFindAValueWhenDealingWithAnIteratorPairSubrangeUnsafely/>}>
 
-int main()
+```cpp
+const std::vector<int> numbers = {
+    1, 2, 3, 4, 5, 0, 6
+};
+
+const auto zeroInFirstThree = std::ranges::find(
+    numbers.begin(), numbers.begin() + 3, 0
+);
+
+if (zeroInFirstThree != numbers.end())
 {
-    const std::vector<int> numbers = {
-        1, 2, 3, 4, 5, 0, 6
-    };
-
-    const auto zeroInFirstThree = std::ranges::find(
-        numbers.begin(), numbers.begin() + 3, 0
-    );
-
-    if (zeroInFirstThree != numbers.end())
-    {
-        std::cout << "there is a 0 in the first three elements";
-    }
-    else
-    {
-        std::cout << "there are no 0s in the first three elements";
-    }
+    std::cout << "there is a 0 in the first three elements";
+}
+else
+{
+    std::cout << "there are no 0s in the first three elements";
 }
 ```
+
+</CustomCodeBlock>
 
 ```plaintext title="Output"
 there is a 0 in the first three elements

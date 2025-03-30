@@ -1,0 +1,33 @@
+```cpp showLineNumbers
+#include <algorithm>
+#include <iostream>
+#include <ranges>
+#include <vector>
+
+int main()
+{
+    const auto println = [](std::vector<int> const& vec)
+    {
+        for (const int element : vec) std::cout << element << ' ';
+        std::cout << '\n';
+    };
+
+    std::vector<int> numbers = {
+        1, 2, 3, 2, 1
+    };
+
+    const auto first1 = std::ranges::find(numbers, 1);
+    const auto last1 = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
+
+    println(numbers);
+    *first1 = 9;
+    *last1  = 7;
+    println(numbers);
+
+    // can also use reverse_view from <ranges>
+    auto numbersReversed = numbers | std::views::reverse;
+    const auto last2 = std::ranges::find(numbersReversed, 2);
+    *last2 = 0;
+    println(numbers);
+}
+```
