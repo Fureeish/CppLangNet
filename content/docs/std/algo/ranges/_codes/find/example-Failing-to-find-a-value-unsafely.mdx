@@ -11,6 +11,7 @@ int main()
 
     auto positionOf1 = std::ranges::find(onlyEvens, 1);
 
-    std::cout << "odd element found: " << *positionOf1;
+// error-next-line
+    std::cout << "odd element found: " << *positionOf1; // dereferencing end, undefined behavior
 }
 ```

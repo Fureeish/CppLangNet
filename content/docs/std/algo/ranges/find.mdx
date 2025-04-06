@@ -272,7 +272,8 @@ const std::vector<int> onlyEvens = {
 
 auto positionOf1 = std::ranges::find(onlyEvens, 1);
 
-std::cout << "odd element found: " << *positionOf1;
+// error-next-line
+std::cout << "odd element found: " << *positionOf1; // dereferencing end, undefined behavior
 ```
 
 </CustomCodeBlock>
@@ -361,6 +362,7 @@ const auto zeroInFirstThree = std::ranges::find(
     numbers.begin(), numbers.begin() + 3, 0
 );
 
+// error-next-line
 if (zeroInFirstThree != numbers.end())
 {
     std::cout << "there is a 0 in the first three elements";
