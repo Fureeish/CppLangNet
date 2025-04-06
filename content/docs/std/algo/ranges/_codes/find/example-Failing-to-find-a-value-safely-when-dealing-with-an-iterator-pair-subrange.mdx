@@ -3,13 +3,13 @@
 #include <iostream>
 #include <vector>
 
-int main()
+auto main() -> int
 {
-    const std::vector<int> numbers = {
+    auto const numbers = std::vector<int>{
         1, 2, 3, 4, 5, 0, 6
     };
 
-    const auto zeroInFirstThree = std::ranges::find(
+    auto const zeroInFirstThree = std::ranges::find(
         numbers.begin(), numbers.begin() + 3, 0
     );
 

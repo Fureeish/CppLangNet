@@ -4,24 +4,27 @@
 #include <string>
 #include <vector>
 
-int main()
+auto main() -> int
 {
-    const auto println = [](const std::vector<int>& vec)
+    auto const println = [](const std::vector<int>& vec)
     {
-        for (const int element : vec) std::cout << element << ' ';
+        for (auto const element : vec)
+        {
+            std::cout << element << ' ';
+        }
         std::cout << '\n';
     };
 
-    std::vector<int> values{2, 4, 6, 1, 8, 10};
-    std::string text = "hello, there!";
+    auto values = std::vector<int>{2, 4, 6, 1, 8, 10};
+    auto text = std::string("hello, there!");
 
     println(values);
     std::cout << text << '\n';
 
-    const auto iteratorTo1 = std::ranges::find(values, 1);
+    auto const iteratorTo1 = std::ranges::find(values, 1);
     values.erase(iteratorTo1);
 
-    const auto iteratorToComma = std::ranges::find(text, ',');
+    auto const iteratorToComma = std::ranges::find(text, ',');
     text.erase(iteratorToComma);
 
     std::cout << '\n';

@@ -3,10 +3,10 @@
 #include <iostream>
 #include <vector>
 
-int main()
+auto main() -> int
 {
-    const std::vector<int> values{2, 4, 6, 1, 8, 10};
-    const auto iteratorTo1 = std::ranges::find(values, 1);
+    auto const values = std::vector<int>{2, 4, 6, 1, 8, 10};
+    auto const iteratorTo1 = std::ranges::find(values, 1);
     std::cout << *iteratorTo1;
 }
 ```

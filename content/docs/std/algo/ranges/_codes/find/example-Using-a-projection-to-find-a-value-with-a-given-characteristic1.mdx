@@ -4,18 +4,18 @@
 #include <string>
 #include <vector>
 
-int main()
+auto main() -> int
 {
-    const std::vector<std::string> words = {
+    auto const words = std::vector<std::string>{
         "some", "of", "these", "words", "are",
         "of", "the", "same", "lengths"
     };
 
-    const auto bySize = [](const std::string& s) {
+    auto const bySize = [](const std::string& s) {
         return s.size();
     };
 
-    const auto ofSize5 = std::ranges::find(words, 5, bySize);
+    auto const ofSize5 = std::ranges::find(words, 5, bySize);
     std::cout << *ofSize5;
 }
 ```

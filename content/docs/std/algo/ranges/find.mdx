@@ -22,7 +22,7 @@ import FullCode_FindingAndPrintingTheFoundValue                                 
 import FullCode_FindingAndRemovingTheFoundValue                                  from './_codes/find/example-Finding-and-removing-the-found-value.mdx';
 import FullCode_FindingAndChangingTheFoundValue                                  from './_codes/find/example-Finding-and-changing-the-found-value.mdx';
 import FullCode_UsingAProjectionToFindAValueWithAGivenCharacteristic1            from './_codes/find/example-Using-a-projection-to-find-a-value-with-a-given-characteristic1.mdx';
-import FullCode_UsingAProjectionToFindAValueWithAGivenCharacteristic2            from './_codes/find/example-Using-a-projection-to-find-a-value-with-a-given-characteristic1.mdx';
+import FullCode_UsingAProjectionToFindAValueWithAGivenCharacteristic2            from './_codes/find/example-Using-a-projection-to-find-a-value-with-a-given-characteristic2.mdx';
 import FullCode_FailingToFindAValueSafely                                        from './_codes/find/example-Failing-to-find-a-value-safely.mdx';
 import FullCode_FailingToFindAValueUnsafely                                      from './_codes/find/example-Failing-to-find-a-value-unsafely.mdx';
 import FullCode_FindingTheLastSuitableValueThanksToReverseIterators              from './_codes/find/example-Finding-the-last-suitable-value-thanks-to-reverse-iterators.mdx';
@@ -130,8 +130,8 @@ inline constexpr find_fn find;
 <CustomCodeBlock fullCode={<FullCode_FindingAndPrintingTheFoundValue/>}>
 
 ```cpp
-const std::vector<int> values{2, 4, 6, 1, 8, 10};
-const auto iteratorTo1 = std::ranges::find(values, 1);
+auto const values = std::vector<int>{2, 4, 6, 1, 8, 10};
+auto const iteratorTo1 = std::ranges::find(values, 1);
 std::cout << *iteratorTo1;
 ```
 
@@ -146,16 +146,16 @@ std::cout << *iteratorTo1;
 <CustomCodeBlock fullCode={<FullCode_FindingAndRemovingTheFoundValue/>}>
 
 ```cpp
-std::vector<int> values{2, 4, 6, 1, 8, 10};
-std::string text = "hello, there!";
+auto values = std::vector<int>{2, 4, 6, 1, 8, 10};
+auto text = std::string("hello, there!");
 
 println(values);
 std::cout << text << '\n';
 
-const auto iteratorTo1 = std::ranges::find(values, 1);
+auto const iteratorTo1 = std::ranges::find(values, 1);
 values.erase(iteratorTo1);
 
-const auto iteratorToComma = std::ranges::find(text, ',');
+auto const iteratorToComma = std::ranges::find(text, ',');
 text.erase(iteratorToComma);
 
 std::cout << '\n';
@@ -178,9 +178,9 @@ hello there!
 <CustomCodeBlock fullCode={<FullCode_FindingAndChangingTheFoundValue/>}>
 
 ```cpp
-std::vector<int> values{2, 4, 5, 8, 10};
+auto values = std::vector<int>{2, 4, 5, 8, 10};
 println(values);
-auto iteratorTo5 = std::ranges::find(values, 5);
+auto const iteratorTo5 = std::ranges::find(values, 5);
 *iteratorTo5 = 6;
 println(values);
 ```
@@ -192,17 +192,21 @@ println(values);
 2 4 6 8 10
 ```
 
+:::info
+Despite `iteratorTo5` being `const`, it's still fine to use it to alter the element it points to. That's because the `const` modifier in its declaration applies only to the iterator itself - we can't change **it** (we can't change *to which* element it points to), but we can alter _the object it points to_.
+:::
+
 #### Using a projection to find a value with a given characteristic #1
 
 <CustomCodeBlock fullCode={<FullCode_UsingAProjectionToFindAValueWithAGivenCharacteristic1/>}>
 
 ```cpp
-const std::vector<std::string> words = {
+auto const words = std::vector<std::string>{
     "some", "of", "these", "words", "are",
     "of", "the", "same", "lengths"
 };
 
-const auto ofSize5 = std::ranges::find(words, 5, bySize);
+auto const ofSize5 = std::ranges::find(words, 5, bySize);
 std::cout << *ofSize5;
 ```
 </CustomCodeBlock>
@@ -216,11 +220,11 @@ these
 <CustomCodeBlock fullCode={<FullCode_UsingAProjectionToFindAValueWithAGivenCharacteristic2/>}>
 
 ```cpp
-const std::vector<int> numbers = {
+auto const numbers = std::vector<int>{
     5, 6, 7, 8
 };
 
-const auto withRemainder2 = std::ranges::find(numbers, 2, byModulus5);
+auto const withRemainder2 = std::ranges::find(numbers, 2, byModulus5);
 std::cout << *withRemainder2;
 ```
 
@@ -235,11 +239,11 @@ std::cout << *withRemainder2;
 <CustomCodeBlock fullCode={<FullCode_FailingToFindAValueSafely/>}>
 
 ```cpp
-const std::vector<int> onlyEvens = {
+auto const onlyEvens = std::vector<int>{
     2, 4, 6, 8, 10
 };
 
-auto positionOf1 = std::ranges::find(onlyEvens, 1);
+auto const positionOf1 = std::ranges::find(onlyEvens, 1);
 
 if (positionOf1 != onlyEvens.end())
 {
@@ -259,18 +263,18 @@ no even elements found
 
 :::info
 Because finding _may_ fail, we should almost always compare the returned iterator with the _end_ of the supplied range before we use it.
-  :::
+:::
 
 #### Failing to find a value unsafely
 
 <CustomCodeBlock fullCode={<FullCode_FailingToFindAValueUnsafely/>}>
 
 ```cpp
-const std::vector<int> onlyEvens = {
+auto const onlyEvens = std::vector<int>{
     2, 4, 6, 8, 10
 };
 
-auto positionOf1 = std::ranges::find(onlyEvens, 1);
+auto const positionOf1 = std::ranges::find(onlyEvens, 1);
 
 // error-next-line
 std::cout << "odd element found: " << *positionOf1; // dereferencing end, undefined behavior
@@ -287,12 +291,12 @@ Because `onlyEvens` does **not** contain the searched-for value `1`, it returns 
 <CustomCodeBlock fullCode={<FullCode_FindingTheLastSuitableValueThanksToReverseIterators/>}>
 
 ```cpp
-std::vector<int> numbers = {
+auto numbers = std::vector<int>{
     1, 2, 3, 2, 1
 };
 
-const auto first1 = std::ranges::find(numbers, 1);
-const auto last1 = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
+auto const first1 = std::ranges::find(numbers, 1);
+auto const last1 = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
 
 println(numbers);
 *first1 = 9;
@@ -301,7 +305,7 @@ println(numbers);
 
 // can also use reverse_view from <ranges>
 auto numbersReversed = numbers | std::views::reverse;
-const auto last2 = std::ranges::find(numbersReversed, 2);
+auto const last2 = std::ranges::find(numbersReversed, 2);
 *last2 = 0;
 println(numbers);
 }
@@ -320,11 +324,11 @@ println(numbers);
 <CustomCodeBlock fullCode={<FullCode_FailingToFindAValueSafelyWhenDealingWithAnIteratorPairSubrange/>}>
 
 ```cpp
-const std::vector<int> numbers = {
+auto const numbers = std::vector<int>{
     1, 2, 3, 4, 5, 0, 6
 };
 
-const auto zeroInFirstThree = std::ranges::find(
+auto const zeroInFirstThree = std::ranges::find(
     numbers.begin(), numbers.begin() + 3, 0
 );
 
@@ -354,11 +358,11 @@ When dealing with an iterator-pair subrange, the _end_ of that subrange is the s
 <CustomCodeBlock fullCode={<FullCode_FailingToFindAValueWhenDealingWithAnIteratorPairSubrangeUnsafely/>}>
 
 ```cpp
-const std::vector<int> numbers = {
+auto const numbers = std::vector<int>{
     1, 2, 3, 4, 5, 0, 6
 };
 
-const auto zeroInFirstThree = std::ranges::find(
+auto const zeroInFirstThree = std::ranges::find(
     numbers.begin(), numbers.begin() + 3, 0
 );
 

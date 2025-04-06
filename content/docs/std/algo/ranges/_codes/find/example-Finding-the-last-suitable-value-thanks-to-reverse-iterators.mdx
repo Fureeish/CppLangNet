@@ -4,20 +4,23 @@
 #include <ranges>
 #include <vector>
 
-int main()
+auto main() -> int
 {
-    const auto println = [](std::vector<int> const& vec)
+    auto const println = [](std::vector<int> const& vec)
     {
-        for (const int element : vec) std::cout << element << ' ';
+        for (auto const element : vec)
+        {
+            std::cout << element << ' ';
+        }
         std::cout << '\n';
     };
 
-    std::vector<int> numbers = {
+    auto numbers = std::vector<int>{
         1, 2, 3, 2, 1
     };
 
-    const auto first1 = std::ranges::find(numbers, 1);
-    const auto last1 = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
+    auto const first1 = std::ranges::find(numbers, 1);
+    auto const last1 = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
 
     println(numbers);
     *first1 = 9;
@@ -26,7 +29,7 @@ int main()
 
     // can also use reverse_view from <ranges>
     auto numbersReversed = numbers | std::views::reverse;
-    const auto last2 = std::ranges::find(numbersReversed, 2);
+    auto const last2 = std::ranges::find(numbersReversed, 2);
     *last2 = 0;
     println(numbers);
 }
