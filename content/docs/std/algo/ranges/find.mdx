@@ -49,11 +49,9 @@ If there is no suitable value, i.e., if the finding process fails, the algorithm
 	}
 }} />
 
-Returns an iterator to the first element in the range satisfiying specific criteria (or `last` iterator if there is no such iterator):
+- $(1)$ Searches for an element equal to `value` (using `operator==`) in a range represented as $[\texttt{first}, \texttt{last})$. Returns `last` if no such element was found.
 
-- **(1)** Searches for an element equal to `value` (using `operator==`)
-
-- **(2)** Same as **(1)**, but uses `r` as the source range, as if using `ranges::begin(r)` as `first` and `ranges::end(r)` as `last`.
+- $(2)$ Same as $(1)$, but uses `r` as the source range, as if using `ranges::begin(r)` as `first` and `ranges::end(r)` as `last`.
 
 The function-like entities described on this page are [**niebloids**](/docs/std/algo/niebloids).
 
@@ -82,7 +80,7 @@ Iterator to the first element satisfying the condition or iterator equal to `las
 
 ### Complexity
 
-Exactly `last - first` applications of the predicate and projection.
+Linear. Exactly `last - first` applications of the predicate and projection.
 
 ### Exceptions
 
@@ -130,7 +128,7 @@ inline constexpr find_fn find;
 <CustomCodeBlock fullCode={<FullCode_FindingAndPrintingTheFoundValue/>}>
 
 ```cpp
-auto const values = std::vector<int>{2, 4, 6, 1, 8, 10};
+auto const values      = std::vector<int>{2, 4, 6, 1, 8, 10};
 auto const iteratorTo1 = std::ranges::find(values, 1);
 std::cout << *iteratorTo1;
 ```
@@ -147,7 +145,7 @@ std::cout << *iteratorTo1;
 
 ```cpp
 auto values = std::vector<int>{2, 4, 6, 1, 8, 10};
-auto text = std::string("hello, there!");
+auto text   = std::string("hello, there!");
 
 println(values);
 std::cout << text << '\n';
@@ -296,7 +294,7 @@ auto numbers = std::vector<int>{
 };
 
 auto const first1 = std::ranges::find(numbers, 1);
-auto const last1 = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
+auto const last1  = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
 
 println(numbers);
 *first1 = 9;

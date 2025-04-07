@@ -20,7 +20,7 @@ auto main() -> int
     };
 
     auto const first1 = std::ranges::find(numbers, 1);
-    auto const last1 = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
+    auto const last1  = std::ranges::find(numbers.rbegin(), numbers.rend(), 1);
 
     println(numbers);
     *first1 = 9;
