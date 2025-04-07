@@ -55,6 +55,9 @@ If there is no suitable value, i.e., if the finding process fails, the algorithm
 
 The function-like entities described on this page are [**niebloids**](/docs/std/algo/niebloids).
 
+The elements are passed through the projection `proj` before being compared.
+However, if no custom projection is specified (i.e., the default one (`std::identity`) is used), passing them through it doesn't do anything.
+
 ### Parameters
 
 <SymbolTable>
